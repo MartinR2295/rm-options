@@ -22,7 +22,8 @@ class RMOptionHandler(object):
         self.automatic_help_command = automatic_help_command
 
         # create help option
-        self.help_option = self.create_option(help_option_long_name, help_option_description, False, short_name=help_option_short_name)
+        self.help_option = self.create_option(help_option_long_name, help_option_description, False,
+                                              short_name=help_option_short_name)
 
     # create an option, and add it to options array
     def create_option(self, long_name: str, description: str, needs_value: bool = False,
@@ -60,6 +61,8 @@ class RMOptionHandler(object):
 
             # invalid state, because we have no options, but values
             if not current_option and not sys.argv[i].startswith("-"):
+                # no argument, but value given
+                self.error = "'{}' given for no option. Please use an option (with - or --) before!".format(sys.argv[i])
                 return False
 
             # if we have a new option, parse the name, and set it to current_option
@@ -67,6 +70,8 @@ class RMOptionHandler(object):
             if sys.argv[i].startswith("-"):
                 current_option = self.get_option_with_name(sys.argv[i], with_prefix=True)
                 if not current_option:
+                    # no option with the given name was found
+                    self.error = "The option '{}' doesn't exist!".format(sys.argv[i])
                     return False
                 current_option.in_use = True
                 continue
@@ -76,6 +81,8 @@ class RMOptionHandler(object):
                 current_option.value.append(sys.argv[i])
             else:
                 if current_option.value:
+                    # the option doesn't support more than one values
+                    self.error = "The option '{}' doesn't accept more than one values!".format(current_option.long_name)
                     return False
                 current_option.value = sys.argv[i]
 
@@ -88,15 +95,16 @@ class RMOptionHandler(object):
         for option in self.options:
             if not option.complete():
                 if not self.ask_for_missing_values:
+                    self.error = "The option '{}' or a value of it is missing!".format(option.long_name)
                     return False
                 if option.multiple_values:
                     while "quit" not in option.value:
-                        option.value.append(input("values for option {}({}) are needed (input quit to quit): "
+                        option.value.append(input("Values for option {}({}) are needed (input quit to quit): "
                                                   .format(option.long_name, option.description)))
                     option.value.remove("quit")
                     continue
                 while option.value == None or option.value == "":
-                    option.value = input("option {}({}) is needed: ".format(option.long_name, option.description))
+                    option.value = input("Option {}({}) is needed: ".format(option.long_name, option.description))
 
         # mapping process
         for option in self.options:
@@ -105,7 +113,7 @@ class RMOptionHandler(object):
                     mapper = option.mapper()
                     mapped_value = mapper.map(option.value)
                     if not mapped_value:
-                        self.error = "cannot parse '{}' to {} for option '{}'".format(option.value,
+                        self.error = "Cannot parse '{}' to {} for option '{}'".format(option.value,
                                                                                       mapper.get_target_type_name(),
                                                                                       option.long_name)
                         return False
@@ -117,7 +125,7 @@ class RMOptionHandler(object):
                                 mapper = option.mapper()
                                 mapped_value = mapper.map(value)
                                 if not mapped_value:
-                                    self.error = "cannot parse '{}' to {} for option '{}'".format(value,
+                                    self.error = "Cannot parse '{}' to {} for option '{}'".format(value,
                                                                                                   mapper.get_target_type_name(),
                                                                                                   option.long_name)
                                     return False

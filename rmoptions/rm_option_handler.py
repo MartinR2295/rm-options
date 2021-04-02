@@ -40,16 +40,32 @@ class RMOptionHandler(object):
             print(self.error)
 
     # prints the usage
-    # TODO: seperate required arguments from the optional arguments
     def print_usage(self):
         print(self.usage_title)
+        self.print_line()
         if self.usage_description:
-            print("\n{}\n".format(self.usage_description))
+            print("{}\n".format(self.usage_description))
 
-        for option in self.options:
-            print(
-                "--{}{}: {}".format(option.long_name, (lambda: " -" + option.short_name if option.short_name else "")(),
-                                    option.description))
+        required_options = sorted(self.get_required_options(), key=lambda o: o.long_name)
+        non_required_options = sorted(self.get_non_required_options(), key=lambda o: o.long_name)
+
+        print("Required Options")
+        self.print_line()
+        for option in required_options:
+            print(option.usage())
+
+        print("\nOptional Options")
+        self.print_line()
+        for option in non_required_options:
+            print(option.usage())
+
+    # get only the required options
+    def get_required_options(self):
+        return [option for option in self.options if option.required]
+
+    # get only the options which are not required
+    def get_non_required_options(self):
+        return [option for option in self.options if not option.required]
 
     # parse, check and maps the options.
     # for errors it returns False.
@@ -92,19 +108,24 @@ class RMOptionHandler(object):
             exit()
 
         # checking process
+        header_already_printed = False
         for option in self.options:
             if not option.complete():
                 if not self.ask_for_missing_values:
                     self.error = "The option '{}' or a value of it is missing!".format(option.long_name)
                     return False
+                if not header_already_printed:
+                    print("\nThere are a few missing options or values of it. Please input them:")
+                    self.print_line()
+                    header_already_printed = True
                 if option.multiple_values:
                     while "quit" not in option.value:
-                        option.value.append(input("Values for option {}({}) are needed (input quit to quit): "
+                        option.value.append(input("Values for option '{}' ({}) are needed (input quit to quit): "
                                                   .format(option.long_name, option.description)))
                     option.value.remove("quit")
                     continue
                 while option.value == None or option.value == "":
-                    option.value = input("Option {}({}) is needed: ".format(option.long_name, option.description))
+                    option.value = input("Option '{}' ({}) is needed: ".format(option.long_name, option.description))
 
         # mapping process
         for option in self.options:
@@ -143,3 +164,6 @@ class RMOptionHandler(object):
         for option in self.options:
             if name == option.long_name or name == option.short_name:
                 return option
+
+    def print_line(self, space_behind_it=False, line_char="‾"):
+        print("{}{}".format(line_char * 20, (lambda: "\n" if space_behind_it else "")()))

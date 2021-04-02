@@ -22,9 +22,20 @@ class RMOption(object):
         self.in_use = False
         self.mapper = mapper
 
+    # usage of this option
+    def usage(self):
+        return "--{}{}: {}{}{}{}".format(self.long_name, (lambda: " -" + self.short_name if self.short_name else "")(),
+                                         self.description,
+                                         (lambda: " {value needed}" if self.needs_value else "")(),
+                                         (lambda: " {{default: {}}}".format(
+                                             self.default_value) if self.default_value is not None else "")(),
+                                         (lambda: " {multiple values possible}" if self.multiple_values else "")())
+
+    # check if the option has a value
     def has_value(self):
         return self.value is not None and self.value != []
 
+    # check if the input of the option was complete
     def complete(self):
         # check if the option is in use, and check also the required state
         if not self.in_use:

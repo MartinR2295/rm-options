@@ -12,6 +12,28 @@ Python package for easier cli options handling.
 - automatic interactive input option for needed options
 - multiple values for one option
 
+Example output for the automatic generated usage:
+```shell
+Usage
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+python test.py
+
+Required Options
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+--name -n: your name {value needed}
+--test -t: test {value needed} {default: t}
+
+Optional Options
+‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
+--all: any text
+--delete: delete something {value needed}
+--force -f: force in int {value needed}
+--help -h: show usage
+--measures -m: force in int {value needed} {multiple values possible}
+--more: more text
+--values: some values {value needed} {multiple values possible}
+```
+
 ## Install
 
 ```shell

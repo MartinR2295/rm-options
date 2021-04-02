@@ -23,12 +23,17 @@ class RMOption(object):
         self.mapper = mapper
 
     def has_value(self):
-        return (self.value and self.value != [])
+        return self.value is not None and self.value != []
 
     def complete(self):
         # check if the option is in use, and check also the required state
         if not self.in_use:
             if self.required:
+                # set the default_value if it's required, but not given by user.
+                # because we have a default_value we don't need an input. #github issue #2
+                if self.default_value is not None:
+                    self.value = self.default_value
+                    return True
                 return False
             return True
 
@@ -36,12 +41,12 @@ class RMOption(object):
         if not self.needs_value:
             return True
 
-        if self.value and self.value != []:
+        if self.value is not None and self.value != []:
             return True
 
         # if we don't have a value, but we have a default value, we set it to the value
         # and return true
-        if self.default_value:
+        if self.default_value is not None:
             self.value = self.default_value
             return True
 

@@ -1,4 +1,11 @@
+
 # rm-options
+
+[![PyPI version](https://badge.fury.io/py/rm-options.svg)](https://badge.fury.io/py/rm-options)
+![build state](https://github.com/MartinR2295/rm-options/actions/workflows/build.yml/badge.svg
+)
+![build state](https://github.com/MartinR2295/rm-options/actions/workflows/test.yml/badge.svg
+)
 
 Python package for easier cli options handling.
 

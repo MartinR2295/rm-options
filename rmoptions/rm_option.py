@@ -24,12 +24,16 @@ class RMOption(object):
 
     # usage of this option
     def usage(self):
-        return "--{}{}: {}{}{}{}".format(self.long_name, (lambda: " -" + self.short_name if self.short_name else "")(),
-                                         self.description,
-                                         (lambda: " {value needed}" if self.needs_value else "")(),
-                                         (lambda: " {{default: {}}}".format(
-                                             self.default_value) if self.default_value is not None else "")(),
-                                         (lambda: " {multiple values possible}" if self.multiple_values else "")())
+        return "--{}{}: {}{}{}{}{}".format(self.long_name,
+                                           (lambda: " -" + self.short_name if self.short_name else "")(),
+                                           self.description,
+                                           (lambda: " {value needed}" if self.needs_value else "")(),
+                                           (lambda: " {{default: {}}}".format(
+                                               self.default_value) if self.default_value is not None else "")(),
+                                           (lambda: " {multiple values possible}" if self.multiple_values else "")(),
+                                           (lambda: " {{{}}}".format(
+                                               self.mapper().get_expected_input_format()) if self.mapper
+                                               and self.mapper().get_expected_input_format() else "")())
 
     # check if the option has a value
     def has_value(self):

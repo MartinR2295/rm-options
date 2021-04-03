@@ -124,7 +124,7 @@ class RMOptionHandler(object):
                                                   .format(option.long_name, option.description)))
                     option.value.remove("quit")
                     continue
-                while option.value == None or option.value == "":
+                while option.value is None or option.value == "":
                     option.value = input("Option '{}' ({}) is needed: ".format(option.long_name, option.description))
 
         # mapping process
@@ -146,9 +146,10 @@ class RMOptionHandler(object):
                                 mapper = option.mapper()
                                 mapped_value = mapper.map(value)
                                 if not mapped_value:
-                                    self.error = "Cannot parse '{}' to {} for option '{}'".format(value,
-                                                                                                  mapper.get_target_type_name(),
-                                                                                                  option.long_name)
+                                    self.error = "Cannot parse '{}' to {} for option '{}'" \
+                                        .format(value,
+                                                mapper.get_target_type_name(),
+                                                option.long_name)
                                     return False
                                 option.value[i] = mapped_value
 

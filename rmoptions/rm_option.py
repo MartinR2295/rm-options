@@ -10,7 +10,8 @@ class RMOption(object):
 
     def __init__(self, long_name: str, description: str, required: bool = False,
                  default_value=None, short_name: str = None,
-                 needs_value=False, multiple_values: bool = False, mapper=None):
+                 needs_value=False, multiple_values: bool = False,
+                 mapper=None, main_option=False):
         self.short_name = short_name
         self.long_name = long_name
         self.description = description
@@ -21,6 +22,14 @@ class RMOption(object):
         self.value = (lambda: [] if multiple_values else None)()
         self.in_use = False
         self.mapper = mapper
+        '''
+        If main_option is True, the handler will stop the checking process, 
+        and put all follow strings as a value to it.
+        It also set the multiple_values to true
+        '''
+        self.main_option = main_option
+        if self.main_option:
+            self.multiple_values = True
 
     # usage of this option
     def usage(self):

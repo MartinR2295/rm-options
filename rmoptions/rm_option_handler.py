@@ -20,6 +20,7 @@ class RMOptionHandler(object):
         self.ask_for_required_options = ask_for_required_options
         self.error = None
         self.automatic_help_command = automatic_help_command
+        self.activated_main_option = None
 
         # create help option
         self.help_option = self.create_option(help_option_long_name, help_option_description, False,
@@ -28,10 +29,11 @@ class RMOptionHandler(object):
     # create an option, and add it to options array
     def create_option(self, long_name: str, description: str, needs_value: bool = False,
                       required: bool = False, default_value=None, short_name: str = None,
-                      multiple_values: bool = False, mapper=None):
+                      multiple_values: bool = False, mapper=None, quit_after_this_option=False):
         option = RMOption(long_name, description, needs_value=needs_value,
                           required=required, default_value=default_value, short_name=short_name,
-                          multiple_values=multiple_values, mapper=mapper)
+                          multiple_values=multiple_values, mapper=mapper,
+                          main_option=quit_after_this_option)
         self.options.append(option)
         return option
 
@@ -90,6 +92,10 @@ class RMOptionHandler(object):
                     self.error = "The option '{}' doesn't exist!".format(sys.argv[i])
                     return False
                 current_option.in_use = True
+                if current_option.main_option:
+                    self.activated_main_option = current_option
+                    self.activated_main_option.value = sys.argv[i+1:]
+                    return True
                 continue
 
             # parse values to the current_option

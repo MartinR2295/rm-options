@@ -60,14 +60,15 @@ class RMOption(object):
                 # set the default_value if it's required, but not given by user.
                 # because we have a default_value we don't need an input. #github issue #2
                 if self.default_value is not None:
-                    self.value = self.default_value
+                    if not self.has_value():
+                        self.value = self.default_value
                     return self.has_value()
                 return False
             return True
 
         # if we don't have a value, but we have a default value, we set it to the value
         # and return true
-        if self.default_value is not None:
+        if self.default_value is not None and not self.has_value():
             self.value = self.default_value
 
         # if we don't need a value
